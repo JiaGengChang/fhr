@@ -12,7 +12,9 @@ genedata = read.delim('./annotations/ensgid-autosomal-proteincoding.txt',row.nam
 counts = counts[rownames(counts) %in% rownames(genedata),]
 
 # convert to DGE object, rows are genes.
-d0 = DGEList(counts_common, genes=genedata[rownames(counts_common),'Gene.name'])
+genes = genedata[rownames(counts),'Gene.name']
+genes = ifelse(genes=="",rownames(counts),genes)
+d0 = DGEList(counts, genes=genes)
 d0 = calcNormFactors(d0)
 
 # extract log normalized expression 
