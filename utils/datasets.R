@@ -29,26 +29,32 @@ load_data = function(){
   # data.fus = read.delim('./matrices/gene_fusion_matrix_signif6.tsv',sep='\t')
   # data.fus = as.matrix(data.fus)
   
-  assign("data.cn",data.cn,envir=.GlobalEnv)
+  # segment level integer cn
+  data.cn.seg = read.delim('./matrices/segment_cn_matrix_uncorrelated.tsv',sep='\t')
+  data.cn.seg = as.matrix(data.cn.seg)
+  
+  assign("data.label",data.label,envir=.GlobalEnv)
+  assign("data.cn.arm",data.cn,envir=.GlobalEnv)
   assign("data.rna",data.rna,envir=.GlobalEnv)
   assign("data.mut",data.mut,envir=.GlobalEnv)
   assign("data.ig",data.ig,envir=.GlobalEnv)
-  assign("data.label",data.label,envir=.GlobalEnv)
+  assign("data.cn.seg",data.cn.seg,envir=.GlobalEnv)
   
   return(0)
 }
 
 load_common_data = function(){
   load_data()
-  common.id = Reduce(intersect,list(rownames(data.cn),rownames(data.rna),rownames(data.mut),rownames(data.ig)),rownames(data.label))
+  common.id = Reduce(intersect,list(rownames(data.cn.arm),rownames(data.rna),rownames(data.mut),rownames(data.ig),rownames(data.cn.seg)),rownames(data.label))
   
-  common.data.cn = data.cn[common.id,,drop=FALSE]
+  common.data.cn.arm = data.cn.arm[common.id,,drop=FALSE]
   common.data.rna = data.rna[common.id,,drop=FALSE]
   common.data.ig = data.ig[common.id,,drop=FALSE]
   common.data.label = data.label[common.id,,drop=FALSE]
   common.data.mut = data.mut[common.id, colSums(data.mut[common.id,]) > 0, drop=FALSE] # filter genes without anymore mutations
+  common.data.cn.seg = data.cn.seg[common.id,,drop=FALSE]
   
-  assign("common.data.cn", common.data.cn, envir=.GlobalEnv)
+  assign("common.data.cn.arm", common.data.cn.arm, envir=.GlobalEnv)
   assign("common.data.rna", common.data.rna, envir=.GlobalEnv)
   assign("common.data.ig", common.data.ig, envir=.GlobalEnv)
   assign("common.data.label", common.data.label, envir=.GlobalEnv)
