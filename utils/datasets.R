@@ -59,4 +59,5 @@ load_common_data = function(){
   assign("common.data.ig", common.data.ig, envir=.GlobalEnv)
   assign("common.data.label", common.data.label, envir=.GlobalEnv)
   assign("common.data.mut", common.data.mut, envir=.GlobalEnv)
+  assign("common.data.cn.seg", common.data.cn.seg, envir=.GlobalEnv)
 }
