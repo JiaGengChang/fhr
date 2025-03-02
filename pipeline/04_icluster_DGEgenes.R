@@ -48,15 +48,15 @@ data.cn = as.matrix(cn[common.ids,])
 data.expr = as.matrix(exprv[common.ids,])
 data.y = clin[common.ids,'risk']
 
-baytune = tune.iClusterBayes(cpus=10, data.expr, 
+bayfit = tune.iClusterBayes(cpus=10, data.expr, 
                              type="gaussian",
                              K = 1:10,)
 
-saveRDS(baytune, file="./scores/iClusterBayesK1to10_DGEgenes.rds")
+saveRDS(bayfit, file="./scores/iClusterBayesK1to10_DGEgenes.rds")
 
 nK=10
-allBIC = sapply(1:nK, function(i) baytune$fit[[i]]$BIC)
-devratio = sapply(1:nK, function(i) baytune$fit[[i]]$dev.ratio)
+allBIC = sapply(1:nK, function(i) bayfit$fit[[i]]$BIC)
+devratio = sapply(1:nK, function(i) bayfit$fit[[i]]$dev.ratio)
 
 # determine the number of clusters
 png("./assets/iClusterBayes.tuning.supervised.png",width=2000,height=800,res=200)
@@ -76,7 +76,7 @@ col.scheme[[3]] = bw.col # mut
 # plot heatmap for optimal K
 k=2
 chr=as.integer(sapply(colnames(cn), function(...) strsplit(strsplit(..., "p")[[1]][[1]],"q")[[1]][[1]]))
-plotHeatmap(baytune$fit[[k]], list(data.expr),
+plotHeatmap(bayfit$fit[[k]], list(data.expr),
             type=c("gaussian"),
             threshold=c(0.25),
             col.scheme = col.scheme,
@@ -89,15 +89,15 @@ plotHeatmap(baytune$fit[[k]], list(data.expr),
 
 # plot posterior probabilities
 par(mar=c(2,4,1,1), mfrow=c(3,1))
-plot(baytune$fit[[k]]$beta.pp[[1]],xlab="Genes",ylab="Posterior proba",
+plot(bayfit$fit[[k]]$beta.pp[[1]],xlab="Genes",ylab="Posterior proba",
      main="Expression")
-plot(baytune$fit[[k]]$beta.pp[[2]],xlab="Genomic region",ylab="Posterior proba",
+plot(bayfit$fit[[k]]$beta.pp[[2]],xlab="Genomic region",ylab="Posterior proba",
      main="Copy Number")
-plot(baytune$fit[[k]]$beta.pp[[3]],xlab="Genes",ylab="Posterior proba",
+plot(bayfit$fit[[k]]$beta.pp[[3]],xlab="Genes",ylab="Posterior proba",
        main="Mutation")
 
 # tabulate number of FHR/GHR/SR per cluster
-table(data.y, baytune$fit[[k]]$clusters)
+table(data.y, bayfit$fit[[k]]$clusters)
 # data.y   1   2   3
 # SR   92 182 109
 # GHR  50  59 101
