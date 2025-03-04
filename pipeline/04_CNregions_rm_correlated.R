@@ -1,27 +1,8 @@
 source('./utils/save_pheatmap.R')
 source('./utils/common_fhr_data.R')
 
-cn = read.delim('./matrices/gene_cn_matrix_CNregions.tsv',sep='\t')
-public.id = substr(rownames(cn),1,9)
-chroms_cn = as.integer(sub('chr([0-9]+)\\.[0-9]+\\.[0-9]+','\\1',colnames(cn)))
-cn = cn[!duplicated(public.id), colnames(cn)[order(chroms_cn)]]
-rownames(cn) = public.id[!duplicated(public.id)]
-
-# locations of values < -9
-missing.ind = arrayInd(which(cn < -9),dim(cn))
-missing.row = unique(missing.ind[,1])
-
-# Option 1: drop individuals with missing CN data
-# cn = cn[-missing.row,]
-# Option 2: clip the -30 values to -8.79
-# cn[cn < -9] = min(cn[cn > -9])
-
-# Optional - Convert segment mean to integer CN
-# data = cn
-source('./utils/copynumber.R')
-data = apply(apply(cn, 2, seg_mean_to_cn), 2, as.integer)
-rownames(data) = rownames(cn)
-
+# read integer level 1464 segment matrix
+data = read.delim('./matrices/segment_cn_matrix.tsv',sep='\t')
 
 # Chromosome map 
 
