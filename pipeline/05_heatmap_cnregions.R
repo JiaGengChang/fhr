@@ -3,43 +3,15 @@ library(RColorBrewer)
 source('./utils/save_pheatmap.R')
 source('./utils/common_fhr_data.R')
 
-cn = read.delim('./matrices/gene_cn_matrix_CNregions.tsv',sep='\t')
-names_cn = substr(rownames(cn),1,9)
-chroms_cn = sapply(colnames(cn), function(...) as.integer(strsplit(strsplit(...,"\\.")[[1]][[1]],"chr")[[1]][[2]]))
-cn = cn[!duplicated(names_cn), colnames(cn)[order(chroms_cn)]]
-rownames(cn) = substr(rownames(cn),1,9)
+cn = read.delim('./matrices/segment_cn_matrix_uncorrelated.tsv',sep='\t')
 
-# locations of values < -9
-missing.ind = arrayInd(which(cn < -9),dim(cn))
-missing.row = unique(missing.ind[,1])
-
-# Option 1: drop individuals with missing CN data
-cn = cn[-missing.row,]
-# Option 2: clip the -30 values to -8.79
-# cn[cn < -9] = min(cn[cn > -9])
-
-# Optional - Convert segment mean to integer CN
-# data = cn
-source('./utils/copynumber.R')
-data = apply(apply(cn, 2, seg_mean_to_cn), 2, as.integer)
-rownames(data) = rownames(cn)
 
 # anova-test to identify significant regions
 fhr.0 = read.delim('./annotations/fhr-annotations.tsv',row.names = 1)
 # Option 1 - compare FHR, GHR, SR
 fhr = fhr.0[(fhr.0['risk'] != -1),]
-# Option 2 - compare FHR and SR
-fhr = fhr.0[(fhr.0['risk'] != -1) & (fhr.0['risk'] != 1),]
 
-# identify the names of labeled patients
-common_ids = intersect(rownames(data), rownames(fhr))
-
-# subset to common ids
-common_data = data[rownames(data) %in% common_ids,]
-common_data = common_data[match(common_ids, rownames(common_data)),]
-common_fhr = fhr[rownames(fhr) %in% common_ids,]
-common_fhr = common_fhr[match(common_ids, rownames(common_fhr)),]
-common_fhr$risk = factor(common_fhr$risk,levels=c(0,1,2),labels=c("SR","GHR","FHR"))
+subset_to_labelled(data,fhr)
 
 # test each feature
 p_values = rep(1,ncol(common_data))
