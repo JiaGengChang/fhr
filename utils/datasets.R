@@ -3,7 +3,7 @@ load_data = function(){
   source('./utils/copynumber.R')
   annot = read.delim('./annotations/ensgid-autosomal-proteincoding.txt',sep='\t',row.names=1)
   
-  fhr = read.delim('./annotations/fhr-annotations-raw.tsv',row.names = 1)
+  fhr = read.delim('./annotations/fhr-annotations-raw.2Mar25.tsv',row.names = 1)
   fhr = fhr[fhr$risk != -1,]
   fhr$risk = factor(fhr$risk, levels=c(0,1,2), labels=c("SR","GHR",'FHR'))
   data.label = fhr['risk']
@@ -11,7 +11,7 @@ load_data = function(){
   data.cn = read.table('./matrices/broad_cn_matrix_integer.tsv',sep='\t')
   data.cn = as.matrix(data.cn)
   
-  data.rna = read.delim('./matrices/gene_exp_logcpm_proteincoding_signif772.tsv',sep='\t')
+  data.rna = read.delim('./matrices/gene_exp_logcpm_proteincoding.tsv',sep='\t')
   data.rna = as.matrix(data.rna)
   gene.name.rna = annot[colnames(data.rna),'Gene.name']
   colnames(data.rna) = ifelse(gene.name.rna=="",colnames(data.rna),gene.name.rna)
