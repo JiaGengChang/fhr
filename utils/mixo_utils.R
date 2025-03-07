@@ -36,7 +36,7 @@ cv = function(ncomp, keepX, n_shuffles=10,n_folds=5){
     class(result.shuffle) = c("shuffle",class(result.shuffle))
     return(result.shuffle)
   })
-  class(cv.results) = c("mixo_splsda_experiment",class(cv.results))
+  class(cv.results) = c("experiment",class(cv.results))
   return(cv.results)
 }
 
@@ -53,7 +53,7 @@ calculate_metrics = function(cm){
 }
 
 # calculate summary statistics - precision, recall, f1 score
-summary.mixo_splsda_experiment = function(experiment) {
+summary.experiment = function(experiment) {
     # metrics for each fold
     results = lapply(unlist(experiment,recursive = F), calculate_metrics)
     
@@ -76,11 +76,11 @@ summary.mixo_splsda_experiment = function(experiment) {
                 recall.std=recall.std,
                 f1_score.mean=f1_score.mean,
                 f1_score.std=f1_score.std)
-    class(result) = c("mixo_splsda_experiment_summary", class(result))
+    class(result) = c("experiment_summary", class(result))
     return(result)
 }
 
-print.mixo_splsda_experiment_summary = function(experiment.summary){
+print.experiment_summary = function(experiment.summary){
   result = cbind(experiment.summary$precision.mean,
                  experiment.summary$precision.std,
                  experiment.summary$recall.mean,
